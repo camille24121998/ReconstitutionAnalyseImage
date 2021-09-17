@@ -8,20 +8,24 @@ import matplotlib.widgets as wdg
 #name = input()
 
 class Image(object):
-	def __init__(self, filename):
-		data = nib.load(filename)
-		self.matrix = data.get_fdata()
-		rows, cols, self.slices = data.shape
+	def __init__(self, matrix, view, ax, bnext, bprev):
+		self.view = view
+		self.matrix = matrix
+		self.ax = ax
+		rows, cols, self.slices = matrix.shape
 		self.index = 0
+		if(self.view == 'z') :
+			self.img = self.ax.imshow(self.matrix[:, :, self.index])
+		elif(self.view == 'y') :
+			self.img = self.ax.imshow(self.matrix[:, self.index, :])
+		elif(self.view == 'x') :
+			self.img = self.ax.imshow(self.matrix[self.index, :, :])
 
-		fig, self.ax = plt.subplots(1, 1)
 		self.ax.set_title('slice %s' % self.index)
-		self.img = self.ax.imshow(self.matrix[:, :, self.index], cmap="gray")
 
-		self.bnext = wdg.Button(plt.axes([0.75, 0.01, 0.05, 0.04]), '>')
-		self.bnext.on_clicked(self.next)
-		self.bprev = wdg.Button(plt.axes([0.7, 0.01, 0.05, 0.04]), '<')
-		self.bprev.on_clicked(self.prev)		
+		bnext.on_clicked(self.next)
+		bprev.on_clicked(self.prev)
+		self.update()
 
 	def next(self, event):
 		self.index = (self.index + 1) % self.slices
@@ -32,16 +36,40 @@ class Image(object):
 		self.update()
 
 	def update(self):
-		self.img.set_data(self.matrix[:, :, self.index])
+		if(self.view == 'z') :
+			self.img.set_data(self.matrix[:, :, self.index])
+		elif(self.view == 'y') :
+			self.img.set_data(self.matrix[:, self.index, :])
+		elif(self.view == 'x') :
+			self.img.set_data(self.matrix[self.index, :, :])
 		self.ax.set_title('slice %s' % self.index)
 		self.img.axes.figure.canvas.draw()
 
-def Viewer(filename):
-	data = nib.load(filename)
-	print(data.header['dim'])
+def Viewer(I, view):
+	if(view == 'Multi-D viewer'):
+		fig, axes = plt.subplots(1, 3)
+		bnext = [wdg.Button(plt.axes([0.25+0.25*i, 0.01, 0.05, 0.04]), '>') for i in range(3)]
+		bprev = [wdg.Button(plt.axes([0.2+0.25*i, 0.01, 0.05, 0.04]), '<') for i in range(3)]
+		Image(I, 'z', axes[0], bnext[0], bprev[0])
+		Image(I, 'y', axes[1], bnext[1], bprev[1])
+		Image(I, 'x', axes[2], bnext[2], bprev[2])
+	else :
+		fig, ax = plt.subplots(1, 1)
+		bnext = wdg.Button(plt.axes([0.75, 0.01, 0.05, 0.04]), '>')
+		bprev = wdg.Button(plt.axes([0.7, 0.01, 0.05, 0.04]), '<')
+		#Sens de l'image a determiner
+		if(view == 'sagittal'):
+			Image(I, 'z', ax, bnext, bprev)
+		elif(view == 'axial'):
+			Image(I, 'y', ax, bnext, bprev)
+		elif(view == 'coronal'):
+			Image(I, 'x', ax, bnext, bprev)
+	plt.show()
 
-image = Viewer("t1.nii")
-plt.show()
+data = nib.load("t1.nii")
+img = data.get_fdata()
+print(data)
+Viewer(img, "Multi-D viewer")
 
 """
 class Image(object):
