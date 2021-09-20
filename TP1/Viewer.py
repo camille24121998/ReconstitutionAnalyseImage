@@ -3,7 +3,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
 import Isotrope
-import median
+import Median
 
 #print("Filename : ")
 #name = input()
