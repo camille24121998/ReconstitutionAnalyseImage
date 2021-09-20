@@ -3,6 +3,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
 import Isotrope
+import median
 
 #print("Filename : ")
 #name = input()
@@ -72,7 +73,13 @@ data = nib.load("t1.nii")
 img = data.get_fdata()
 print(data)
 
-img_d = Isotrope.isotrope(img)
+ixgrid = np.ix_([0,1,2],[0,1,2])
+submatrix = img[0][ixgrid]
+print(submatrix)
+print(np.median(submatrix))
+
+#img_d = Isotrope.isotrope(img)
+img_d = median.median(img)
 
 Viewer(img_d, 'Multi-D viewer')
 
