@@ -65,16 +65,30 @@ def Viewer(matrix, view):
 			Image(matrix, 'coronal', ax, bnext, bprev)
 		elif(view == 'axial'):
 			Image(matrix, 'axial', ax, bnext, bprev)
-	plt.show()
 
 
-data = nib.load("t1.nii")
+data = nib.load("fa.nii")
 img = data.get_fdata()
-print(data)
+print(data, "\n")
+print("Voxel dimension (in mm) : ", data.header.get_zooms(),)
+'''print(data.header.get_data_shape())
+print(data.header.get_qform())
+print(data.header.get_sform())
+print(data.header.get_slope_inter())
+print(data.header.get_dim_info())
+print(data.header.get_xyzt_units())'''
+
+plt.ioff()
+fig = plt.figure()
+print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
+plt.close(fig)
 
 img_d = Isotrope.isotrope(img)
 
 Viewer(img_d, 'Multi-D viewer')
+
+plt.show()
+
 
 """
 class Image(object):
