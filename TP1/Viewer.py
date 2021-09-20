@@ -2,6 +2,7 @@ import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
+import Isotrope
 
 #print("Filename : ")
 #name = input()
@@ -71,7 +72,9 @@ data = nib.load("t1.nii")
 img = data.get_fdata()
 print(data)
 
-Viewer(img, 'Multi-D viewer')
+img_d = Isotrope.isotrope(img)
+
+Viewer(img_d, 'Multi-D viewer')
 
 """
 class Image(object):
