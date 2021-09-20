@@ -84,15 +84,10 @@ fig = plt.figure()
 print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
 plt.close(fig)
 
-ixgrid = np.ix_([0,1,2],[0,1,2])
-submatrix = img[0][ixgrid]
-print(submatrix)
-print(np.median(submatrix))
-
 #img_d = Isotrope.isotrope(img)
-img_d = median.median(img)
+#img_d = median.median(img)
 
-Viewer(img_d, 'Multi-D viewer')
+Viewer(img, 'Multi-D viewer')
 
 plt.show()
 
