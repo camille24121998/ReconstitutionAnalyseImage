@@ -15,11 +15,11 @@ class Image(object):
 		rows, cols, self.slices = matrix.shape
 		self.index = 0
 		if(self.view == 'axial') :
-			self.img = self.ax.imshow(self.matrix[:, :, self.index])
+			self.img = self.ax.imshow(self.matrix[:, :, self.index], cmap='gray')
 		elif(self.view == 'coronal') :
-			self.img = self.ax.imshow(self.matrix[:, self.index, :])
+			self.img = self.ax.imshow(self.matrix[:, self.index, :], cmap='gray')
 		elif(self.view == 'sagittal') :
-			self.img = self.ax.imshow(self.matrix[self.index, :, :])
+			self.img = self.ax.imshow(self.matrix[self.index, :, :], cmap='gray')
 
 		self.ax.set_title(self.view + " slice " + str(self.index))
 
