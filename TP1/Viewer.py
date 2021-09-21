@@ -66,6 +66,7 @@ def Viewer(matrix, view):
 			Image(matrix, 'coronal', ax, bnext, bprev)
 		elif(view == 'axial'):
 			Image(matrix, 'axial', ax, bnext, bprev)
+	plt.show()
 
 data = nib.load("fa.nii")
 img = data.get_fdata()
@@ -82,6 +83,8 @@ plt.ioff()
 fig = plt.figure()
 print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
 plt.close(fig)
+
+print(img)
 
 img_d = Isotrope.isotrope(img)
 
