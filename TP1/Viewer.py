@@ -107,6 +107,8 @@ def analyseImage(data, img) :
 data = nib.load("t1.nii")
 img = data.get_fdata()
 
+fi, axx = plt.subplots(1, 1, sharey=True, tight_layout = True)
+
 #img = Isotrope.isotrope(img)
 img = Gaussien.gaussien(img)
 #img = Median.median(img)
