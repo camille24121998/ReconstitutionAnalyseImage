@@ -68,27 +68,37 @@ def Viewer(matrix, view):
 			Image(matrix, 'axial', ax, bnext, bprev)
 	plt.show()
 
+def analyseImage(data, img) :
+	print(data, "\n")
+	print("Voxel dimension (in mm) : ", data.header.get_zooms(),)
+	'''print(data.header.get_data_shape())
+	print(data.header.get_qform())
+	print(data.header.get_sform())
+	print(data.header.get_slope_inter())
+	print(data.header.get_dim_info())
+	print(data.header.get_xyzt_units())'''
+
+	plt.ioff()
+	fig = plt.figure()
+	print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
+	plt.close(fig)
+
+	print(img)
+	min = np.min(img[np.nonzero(img)])
+	max = np.max(img)
+	print("Minimum : ", min)
+	print("Maximum : ", max)
+	print("Cmichelon = ", (max-min)/(max+min))
+
+
 data = nib.load("fa.nii")
 img = data.get_fdata()
-print(data, "\n")
-print("Voxel dimension (in mm) : ", data.header.get_zooms(),)
-'''print(data.header.get_data_shape())
-print(data.header.get_qform())
-print(data.header.get_sform())
-print(data.header.get_slope_inter())
-print(data.header.get_dim_info())
-print(data.header.get_xyzt_units())'''
-
-plt.ioff()
-fig = plt.figure()
-print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
-plt.close(fig)
-
-print(img)
 
 img_d = Isotrope.isotrope(img)
 
 Viewer(img, 'Multi-D viewer')
+
+analyseImage(data, img)
 
 plt.show()
 
