@@ -3,10 +3,12 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
 import Isotrope
-import Median
+import Gaussien
 
 #print("Filename : ")
 #name = input()
+import Median
+
 
 class Image(object):
 	def __init__(self, matrix, view, ax, bnext, bprev):
@@ -91,13 +93,13 @@ def analyseImage(data, img) :
 	print("Cmichelson = ", (max-min)/(max+min))
 
 
-data = nib.load("fa.nii")
+data = nib.load("t1.nii")
 img = data.get_fdata()
 
-img_d = Isotrope.isotrope(img)
-
+#img = Isotrope.isotrope(img)
+img = Gaussien.gaussien(img)
+#img = Median.median(img)
 Viewer(img, 'Multi-D viewer')
-
 analyseImage(data, img)
 
 plt.show()

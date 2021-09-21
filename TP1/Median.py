@@ -1,4 +1,9 @@
-import numpy as np
+import scipy.signal as sig
+
+def median(img) :
+    return sig.medfilt(img)
+
+"""import numpy as np
 
 def median(img) :
 
@@ -20,3 +25,4 @@ def median(img) :
                 #calcul la medianne de la sous-matrice
                 img_d[i,j,k] = np.median(subMatrix)
     return img_d
+"""
