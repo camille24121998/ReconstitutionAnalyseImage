@@ -82,7 +82,8 @@ def analyseImage(data, img) :
 
 	plt.ioff()
 	fig = plt.figure()
-	print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
+	dim = fig.get_size_inches()*fig.dpi
+	print("Image dimension (in px) : ", dim)
 	plt.close(fig)
 
 	print(img)
@@ -91,6 +92,15 @@ def analyseImage(data, img) :
 	print("Minimum : ", min)
 	print("Maximum : ", max)
 	print("Cmichelson = ", (max-min)/(max+min))
+
+	'''RMS constrast : sqrt[ 1/MN * for(i=0; i<=N-1; i++) for(j=0; j<=M-1; j++) (Lij - moyenne(L))^2 ] where Lij is the brightness of pixel ij'''
+	Lbarre = img.mean()
+	print(Lbarre)
+	diff = np.power(img - Lbarre, 2)
+	print(diff)
+	diff = np.sum(diff)
+	RMS = np.sqrt(diff/((dim[0]*dim[1])-1))
+	print("RMS contrast = ", RMS)
 
 
 data = nib.load("t1.nii")
@@ -103,4 +113,3 @@ Viewer(img, 'Multi-D viewer')
 analyseImage(data, img)
 
 plt.show()
-
