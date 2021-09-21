@@ -88,7 +88,7 @@ def analyseImage(data, img) :
 	max = np.max(img)
 	print("Minimum : ", min)
 	print("Maximum : ", max)
-	print("Cmichelon = ", (max-min)/(max+min))
+	print("Cmichelson = ", (max-min)/(max+min))
 
 
 data = nib.load("fa.nii")
