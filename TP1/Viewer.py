@@ -2,6 +2,8 @@ import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
+import Isotrope
+import Median
 
 #print("Filename : ")
 #name = input()
@@ -14,11 +16,11 @@ class Image(object):
 		rows, cols, self.slices = matrix.shape
 		self.index = 0
 		if(self.view == 'axial') :
-			self.img = self.ax.imshow(self.matrix[:, :, self.index])
+			self.img = self.ax.imshow(self.matrix[:, :, self.index], cmap='gray')
 		elif(self.view == 'coronal') :
-			self.img = self.ax.imshow(self.matrix[:, self.index, :])
+			self.img = self.ax.imshow(self.matrix[:, self.index, :], cmap='gray')
 		elif(self.view == 'sagittal') :
-			self.img = self.ax.imshow(self.matrix[self.index, :, :])
+			self.img = self.ax.imshow(self.matrix[self.index, :, :], cmap='gray')
 
 		self.ax.set_title(self.view + " slice " + str(self.index))
 
@@ -66,9 +68,27 @@ def Viewer(matrix, view):
 			Image(matrix, 'axial', ax, bnext, bprev)
 	plt.show()
 
-
-data = nib.load("t1.nii")
+data = nib.load("fa.nii")
 img = data.get_fdata()
-print(data)
-print(img[0])
+print(data, "\n")
+print("Voxel dimension (in mm) : ", data.header.get_zooms(),)
+'''print(data.header.get_data_shape())
+print(data.header.get_qform())
+print(data.header.get_sform())
+print(data.header.get_slope_inter())
+print(data.header.get_dim_info())
+print(data.header.get_xyzt_units())'''
+
+plt.ioff()
+fig = plt.figure()
+print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
+plt.close(fig)
+
+print(img)
+
+img_d = Isotrope.isotrope(img)
+
 Viewer(img, 'Multi-D viewer')
+
+plt.show()
+
