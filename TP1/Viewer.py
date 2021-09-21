@@ -67,7 +67,6 @@ def Viewer(matrix, view):
 		elif(view == 'axial'):
 			Image(matrix, 'axial', ax, bnext, bprev)
 
-
 data = nib.load("fa.nii")
 img = data.get_fdata()
 print(data, "\n")
@@ -84,13 +83,11 @@ fig = plt.figure()
 print("Image dimension (in px) : ", fig.get_size_inches()*fig.dpi)
 plt.close(fig)
 
-#img_d = Isotrope.isotrope(img)
-#img_d = median.median(img)
+img_d = Isotrope.isotrope(img)
 
 Viewer(img, 'Multi-D viewer')
 
 plt.show()
-
 
 """
 class Image(object):
