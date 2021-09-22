@@ -22,7 +22,7 @@ En plus des librairies necessaires pour la matière IMN530 les librairies extern
 ## Usage
 
   ### Vues
-  <p> Pour chosir la vue désiré, modifiez la variable "view" aux lignes 123 à 126. </p>
+  <p> Pour chosir la vue désiré, modifiez la variable "view" aux lignes 142 à 144. </p>
   
 ### Bruitage
   <p> Pour choisir l'algorithme de bruitage utilisé, modifiez la variable "img" aux lignes 128 à 130. <p>
