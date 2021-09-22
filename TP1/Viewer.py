@@ -49,8 +49,21 @@ class Image(object):
 		self.ax.set_title(self.view + " slice " + str(self.index))
 		self.img.axes.figure.canvas.draw()
 
-def Viewer(matrix, view):
+def Viewer(matrix, view, nameOfImage):
 	if(view == 'Multi-D viewer'):
+		xMax = len(img[0])
+		yMax = len(img[0][0])
+		if(nameOfImage=="t1.nii") :
+			xMax = 40
+			yMax = 26
+		elif(nameOfImage=="fa.nii") :
+			xMax = 28
+			yMax = 24
+		elif(nameOfImage=="flair.nii") :
+			xMax = 52
+			yMax = 24
+		fig2, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
+		axs.hist(img[0][0:xMax, 0:yMax])
 		fig, axes = plt.subplots(1, 3)
 		bnext = [wdg.Button(plt.axes([0.25+0.25*i, 0.01, 0.05, 0.04]), '>') for i in range(3)]
 		bprev = [wdg.Button(plt.axes([0.2+0.25*i, 0.01, 0.05, 0.04]), '<') for i in range(3)]
@@ -80,11 +93,11 @@ def analyseImage(data, img) :
 	print(data.header.get_dim_info())
 	print(data.header.get_xyzt_units())'''
 
-	plt.ioff()
+	#plt.ioff()
 	fig = plt.figure()
 	dim = fig.get_size_inches()*fig.dpi
 	print("Image dimension (in px) : ", dim)
-	plt.close(fig)
+	#plt.close(fig)
 
 	print(img)
 	min = np.min(img[np.nonzero(img)])
@@ -103,16 +116,12 @@ def analyseImage(data, img) :
 	RMS = np.sqrt(diff/((dim[0]*dim[1])-1))
 	print("RMS contrast = ", RMS)
 
-
-data = nib.load("t1.nii")
+nameOfImage = "t1.nii"
+data = nib.load(nameOfImage)
 img = data.get_fdata()
 
-fi, axx = plt.subplots(1, 1, sharey=True, tight_layout = True)
-
 #img = Isotrope.isotrope(img)
-img = Gaussien.gaussien(img)
+#img = Gaussien.gaussien(img)
 #img = Median.median(img)
-Viewer(img, 'Multi-D viewer')
+Viewer(img, 'Multi-D viewer', nameOfImage)
 analyseImage(data, img)
-
-plt.show()
