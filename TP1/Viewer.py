@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
 import Isotrope
 import Gaussien
+import medpy.filter.smoothing as smt
 
 #print("Filename : ")
 #name = input()
@@ -103,12 +104,13 @@ def analyseImage(data, img) :
 	print("RMS contrast = ", RMS)
 
 
-data = nib.load("t1.nii")
+data = nib.load("flair.nii")
 img = data.get_fdata()
 
 #img = Isotrope.isotrope(img)
-img = Gaussien.gaussien(img)
+#img = Gaussien.gaussien(img)
 #img = Median.median(img)
+img = smt.anisotropic_diffusion(img, 1, 10, 0.1, None, 3)
 Viewer(img, 'Multi-D viewer')
 analyseImage(data, img)
 
