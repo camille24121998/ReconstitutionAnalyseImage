@@ -20,12 +20,18 @@ class Image(object):
 		self.index = 0
 		if(self.view == 'axial') :
 			self.img = self.ax.imshow(self.matrix[:, :, self.index], cmap='gray')
+			min = np.min(self.matrix[:, :, self.index])
+			max = np.max(self.matrix[:, :, self.index])
 		elif(self.view == 'coronal') :
 			self.img = self.ax.imshow(self.matrix[:, self.index, :], cmap='gray')
+			min = np.min(self.matrix[:, self.index, :])
+			max = np.max(self.matrix[:, self.index, :])
 		elif(self.view == 'sagittal') :
 			self.img = self.ax.imshow(self.matrix[self.index, :, :], cmap='gray')
+			min = np.min(self.matrix[self.index, :, :])
+			max = np.max(self.matrix[self.index, :, :])
 
-		self.ax.set_title(self.view + " slice " + str(self.index))
+		self.ax.set_title(self.view + " slice " + str(self.index) + "\nMin Intensity : " + str(min) + "\nMax Intensity : " + str(max))
 
 		bnext.on_clicked(self.next)
 		bprev.on_clicked(self.prev)
@@ -43,11 +49,17 @@ class Image(object):
 	def update(self):
 		if(self.view == 'axial') :
 			self.img.set_data(self.matrix[:, :, self.index])
+			min = np.min(self.matrix[:, :, self.index])
+			max = np.max(self.matrix[:, :, self.index])
 		elif(self.view == 'coronal') :
 			self.img.set_data(self.matrix[:, self.index, :])
+			min = np.min(self.matrix[:, self.index, :])
+			max = np.max(self.matrix[:, self.index, :])
 		elif(self.view == 'sagittal') :
 			self.img.set_data(self.matrix[self.index, :, :])
-		self.ax.set_title(self.view + " slice " + str(self.index))
+			min = np.min(self.matrix[self.index, :, :])
+			max = np.max(self.matrix[self.index, :, :])
+		self.ax.set_title(self.view + " slice " + str(self.index) + "\nMin Intensity : " + str(min) + "\nMax Intensity : " + str(max))
 		self.img.axes.figure.canvas.draw()
 
 def Viewer(matrix, view, nameOfImage):
