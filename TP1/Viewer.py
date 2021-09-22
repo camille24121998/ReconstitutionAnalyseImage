@@ -87,32 +87,19 @@ def Viewer(matrix, view, nameOfImage):
 def analyseImage(data, img) :
 	print(data, "\n")
 	print("Voxel dimension (in mm) : ", data.header.get_zooms(),)
-	'''print(data.header.get_data_shape())
-	print(data.header.get_qform())
-	print(data.header.get_sform())
-	print(data.header.get_slope_inter())
-	print(data.header.get_dim_info())
-	print(data.header.get_xyzt_units())'''
 
-	#plt.ioff()
 	fig = plt.figure()
 	dim = fig.get_size_inches()*fig.dpi
 	print("Image dimension (in px) : ", dim)
-	#plt.close(fig)
 
-	print(img)
 	min = np.min(img[np.nonzero(img)])
 	max = np.max(img)
-	print("Minimum : ", min)
-	print("Maximum : ", max)
 	print("Cmichelson = ", (max-min)/(max+min))
 
 	'''RMS constrast : sqrt[ 1/MN * for(i=0; i<=N-1; i++) for(j=0; j<=M-1; j++) (Lij - moyenne(L))^2 ] where Lij is the brightness of pixel ij'''
 	imgMoy = img/max
 	Lbarre = imgMoy.mean()
-	print(Lbarre)
 	diff = np.power(imgMoy - Lbarre, 2)
-	print(diff)
 	diff = np.sum(diff)
 	RMS = np.sqrt(diff/((dim[0]*dim[1])-1))
 	print("RMS contrast = ", RMS)
