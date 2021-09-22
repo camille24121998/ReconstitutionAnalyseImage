@@ -93,6 +93,8 @@ def Viewer(matrix, view, nameOfImage):
 			Image(matrix, 'coronal', ax, bnext, bprev)
 		elif(view == 'axial'):
 			Image(matrix, 'axial', ax, bnext, bprev)
+		else :
+			print("Mauvaise vu")
 	plt.show()
 
 def analyseImage(data, img) :
@@ -118,9 +120,13 @@ def analyseImage(data, img) :
 nameOfImage = "t1.nii"
 data = nib.load(nameOfImage)
 img = data.get_fdata()
+view = 'Multi-D viewer'
+#view = 'sagittal'
+#view = 'axial'
+#view = 'coronal'
 
 #img = Gaussien.gaussien(img)
 #img = sig.medfilt(img)
 #img = smt.anisotropic_diffusion(img, 10, 20, 0.1, None, 3)
-Viewer(img, 'Multi-D viewer', nameOfImage)
+Viewer(img, view, nameOfImage)
 analyseImage(data, img)
