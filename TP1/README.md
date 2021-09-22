@@ -4,7 +4,7 @@
 
 <p>
   TP1 de la matière IMN530, Reconstruction et analyse d'images médicales.
-  Réalisé par Philippe VONG, Manina MENG et Camille PEDRON pour le 22 septembre 2021
+  Réalisé par Philippe VONG, Manina MENG et Camille PEDRON pour le 22 septembre 2021.
 
 
 
@@ -20,7 +20,9 @@ En plus des librairies necessaires pour la matière IMN530 les librairies extern
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-### Vues
-  <p> Pour chosir la vue désiré, modifiez la variable "view" aux lignes 123 à 126 
+
+  ### Vues
+  <p> Pour chosir la vue désiré, modifiez la variable "view" aux lignes 123 à 126. </p>
+  
 ### Bruitage
-  <p> Pour choisir l'algorithme de bruitage utilisé, modifiez la variable "img" aux lignes 128 à 130 <p>
+  <p> Pour choisir l'algorithme de bruitage utilisé, modifiez la variable "img" aux lignes 128 à 130. <p>
