@@ -95,9 +95,10 @@ def analyseImage(data, img) :
 	print("Cmichelson = ", (max-min)/(max+min))
 
 	'''RMS constrast : sqrt[ 1/MN * for(i=0; i<=N-1; i++) for(j=0; j<=M-1; j++) (Lij - moyenne(L))^2 ] where Lij is the brightness of pixel ij'''
-	Lbarre = img.mean()
+	imgMoy = img/max
+	Lbarre = imgMoy.mean()
 	print(Lbarre)
-	diff = np.power(img - Lbarre, 2)
+	diff = np.power(imgMoy - Lbarre, 2)
 	print(diff)
 	diff = np.sum(diff)
 	RMS = np.sqrt(diff/((dim[0]*dim[1])-1))
@@ -106,6 +107,8 @@ def analyseImage(data, img) :
 
 data = nib.load("flair.nii")
 img = data.get_fdata()
+
+fi, axx = plt.subplots(1, 1, sharey=True, tight_layout = True)
 
 #img = Isotrope.isotrope(img)
 #img = Gaussien.gaussien(img)
