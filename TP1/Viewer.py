@@ -2,13 +2,12 @@ import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 import matplotlib.widgets as wdg
-import Isotrope
 import Gaussien
 import medpy.filter.smoothing as smt
+import scipy.signal as sig
 
 #print("Filename : ")
 #name = input()
-import Median
 
 
 class Image(object):
@@ -110,10 +109,9 @@ img = data.get_fdata()
 
 fi, axx = plt.subplots(1, 1, sharey=True, tight_layout = True)
 
-#img = Isotrope.isotrope(img)
 #img = Gaussien.gaussien(img)
-#img = Median.median(img)
-img = smt.anisotropic_diffusion(img, 1, 10, 0.1, None, 3)
+#img = sig.medfilt(img)
+#img = smt.anisotropic_diffusion(img, 10, 20, 0.1, None, 3)
 Viewer(img, 'Multi-D viewer')
 analyseImage(data, img)
 
