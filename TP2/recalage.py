@@ -40,8 +40,16 @@ def parse_args():
 
 def main():
     args = parse_args()
-    filename_i = glob.glob(args.path_images + "I{}.*".format(1))
-    img_i = imageio.imread(filename_i[0])
+
+    for i in range(1, 6):
+        print("*       Paire (I{}, J{})\n".format(i, i))
+
+        filename_i = glob.glob(args.path_images + "I{}.*".format(i))
+        filename_j = glob.glob(args.path_images + "J{}.*".format(i))
+        print("Using files {} and {}".format(filename_i, filename_j))
+
+        img_i = imageio.imread(filename_i[0])
+        img_j = imageio.imread(filename_j[0])
 
     JoinHist("Data/I5.jpg", "I6.jpg", 30)
 
