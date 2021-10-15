@@ -31,3 +31,31 @@ def translation(I, p, q) :
             if 0<newX<w and 0<newY<h:
                 NewI[newY, newX] = I[i, j]
     return NewI
+
+def minSSDtranslation(I, J) :
+    h,w = I.shape[:2]
+
+    # Ajoute des colonnes de 0 de chaque coté de l'image I
+    bigIx = np.c_[np.zeros(h), I, np.zeros(h)]
+    # Ajoute des lignes de 0 de chaque coté de l'image I
+    bigIy = np.r_[[np.zeros(w)], I, [np.zeros(w)]]
+
+    # Calcule les dérivés de l'image I par rapport à x et y
+    dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
+    dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+
+    p = 0
+    q = 0
+    for i in range(12):
+        # Calcule le gradiant du SSD par rapport à p et q
+        grad_SSD_p = 2 * np.matmul((translation(I, p, q) - J), translation(dIx, p, q))
+        grad_SSD_q = 2 * np.matmul((translation(I, p, q) - J), translation(dIy, p, q))
+
+        if grad_SSD_p.all() == 0 and grad_SSD_q.all() == 0:
+            break
+
+        # Recalcule p et q pour améliorer le décalage
+        p = p - grad_SSD_p
+        q = q - grad_SSD_q
+
+    return translation(I, p, q)
