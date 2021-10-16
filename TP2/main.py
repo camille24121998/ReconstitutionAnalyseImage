@@ -49,7 +49,7 @@ def main():
         plt.imshow(img)
         plt.show()
         # Montre l'image après la translation
-        imgT = RecalageIconique.translation(img, 100, 100)
+        imgT = RecalageIconique.translation(img, 12, 15)
         plt.imshow(imgT)
         plt.show()
 

@@ -1,4 +1,6 @@
 import numpy as np
+import scipy.ndimage
+from scipy.ndimage import affine_transform
 import nibabel as nib
 import matplotlib.pyplot as plt
 import imageio
@@ -27,8 +29,8 @@ def translation(I, p, q):
         for j in range(w):
             origin = np.array([j, i, 1])
             newXY = np.matmul(T, origin)
-            newX = newXY[0]
-            newY = newXY[1]
+            newX = round(newXY[0])
+            newY = round(newXY[1])
 
             # Si la nouvelle coordonnée est toujours dans l'image on y met le pixel de la coordonnée original
             if 0 < newX < w and 0 < newY < h:
@@ -42,6 +44,7 @@ def translation(I, p, q):
 # Cette fonction fait un recalage 2D en minimisant la SSD et considérant uniquement des translations
 #
 def minSSDtranslation(I, J):
+    e = 0.001
     h, w = I.shape[:2]
 
     # Ajoute des colonnes de 0 de chaque coté de l'image I
@@ -57,16 +60,20 @@ def minSSDtranslation(I, J):
     q = 0
     for i in range(12):
         # Calcule le gradiant du SSD par rapport à p et q
-        grad_SSD_p = 2 * np.matmul((translation(I, p, q) - J), translation(dIx, p, q))
-        grad_SSD_q = 2 * np.matmul((translation(I, p, q) - J), translation(dIy, p, q))
+        grad_SSD_p = 2 * np.sum(np.multiply((translation(I, p, q) - J), translation(dIx, p, q)))
+        grad_SSD_q = 2 * np.sum(np.multiply((translation(I, p, q) - J), translation(dIy, p, q)))
 
-        if grad_SSD_p.all() == 0 and grad_SSD_q.all() == 0:
+        print("gradp = ", grad_SSD_p)
+        print("gradq = ", grad_SSD_q)
+        if abs(grad_SSD_p) < e and abs(grad_SSD_q) < e:
             break
 
         # Recalcule p et q pour améliorer le décalage
-        p = p - grad_SSD_p
-        q = q - grad_SSD_q
+        p = p - 1.0/(i+1) * grad_SSD_p
+        q = q - 1.0/(i+1) * grad_SSD_q
 
+        print("newp = ",p)
+        print("newq = ",q)
     return translation(I, p, q)
 
 #
@@ -87,8 +94,8 @@ def rotation(I, theta):
         for j in range(w):
             origin = np.array([j, i, 1])
             newXY = np.dot(T, origin)
-            newX = int(newXY[0])
-            newY = int(newXY[1])
+            newX = round(newXY[0])
+            newY = round(newXY[1])
 
             # Si la nouvelle coordonnée est toujours dans l'image on y met le pixel de la coordonnée original
             if 0 < newX < w and 0 < newY < h:
@@ -139,6 +146,6 @@ def minSSDrotation(I, J):
             break
 
         # Recalcule p et q pour améliorer le décalage
-        theta = theta - grad_SSD_theta
+        theta = theta - 1.0/(i+1) * grad_SSD_theta
 
     return rotation(I, theta)
