@@ -17,10 +17,11 @@ import glob
 # Merci à son auteur
 #
 def translation(I, p, q) :
-    NewI = np.zeros(I.shape)
-    T = np.array([[1, 0, p], [0, 1, q], [0, 0, 1]])
+    NewI = np.zeros(I.shape) # image translaté
+    T = np.array([[1, 0, p], [0, 1, q], [0, 0, 1]]) # matrice de translation
     h,w = I.shape[:2]
 
+    # Pour chaque pixel, on recalcule sa nouvelle coordonné
     for i in range(h):
         for j in range(w):
             origin = np.array([j, i, 1])
@@ -28,8 +29,10 @@ def translation(I, p, q) :
             newX = newXY[0]
             newY = newXY[1]
 
+            # Si la nouvelle coordonnée est toujours dans l'image on y met le pixel de la coordonnée original
             if 0<newX<w and 0<newY<h:
                 NewI[newY, newX] = I[i, j]
+
     return NewI
 
 def minSSDtranslation(I, J) :
