@@ -35,6 +35,10 @@ def translation(I, p, q) :
 
     return NewI
 
+#
+# minSSDtranslation(I, J) retourne une nouvelle image correspondant à lʼimage I recalé sur l'image J
+# Cette fonction fait un recalage 2D en minimisant la SSD et considérant uniquement des translations
+#
 def minSSDtranslation(I, J) :
     h,w = I.shape[:2]
 
