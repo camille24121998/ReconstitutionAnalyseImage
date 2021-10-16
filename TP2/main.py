@@ -74,5 +74,16 @@ def main():
         plt.imshow(imgT)
         plt.show()
 
+    if args.question == "4d" :
+        I = plt.imread(images[2])
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(images[3])
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSDrotation(I, J)
+        plt.imshow(newI)
+        plt.show()
+
 if __name__ == "__main__":
     main()

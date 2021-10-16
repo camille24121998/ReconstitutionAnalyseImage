@@ -79,14 +79,14 @@ def minSSDtranslation(I, J):
 #
 def rotation(I, theta):
     NewI = np.zeros(I.shape) # image translaté
-    T = np.array([[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]) # matrice de rotation
+    T = np.array([[np.cos(theta), -np.sin(theta), 0.0], [np.sin(theta), np.cos(theta), 0.0], [0.0, 0.0, 1.0]]) # matrice de rotation
     h, w = I.shape[:2]
 
     # Pour chaque pixel, on recalcule sa nouvelle coordonné
     for i in range(h):
         for j in range(w):
             origin = np.array([j, i, 1])
-            newXY = np.matmul(T, origin)
+            newXY = np.dot(T, origin)
             newX = int(newXY[0])
             newY = int(newXY[1])
 
@@ -95,3 +95,50 @@ def rotation(I, theta):
                 NewI[newY, newX] = I[i, j]
 
     return NewI
+
+
+#
+# minSSDtranslation(I, J) retourne une nouvelle image correspondant à lʼimage I recalé sur l'image J
+# Cette fonction fait un recalage 2D en minimisant la SSD et considérant uniquement des rotation
+#
+def minSSDrotation(I, J):
+    h, w = I.shape[:2]
+
+    # Ajoute des colonnes de 0 de chaque coté de l'image I
+    bigIx = np.c_[np.zeros(h), I, np.zeros(h)]
+    # Ajoute des lignes de 0 de chaque coté de l'image I
+    bigIy = np.r_[[np.zeros(w)], I, [np.zeros(w)]]
+
+    # Calcule les dérivés de l'image I par rapport à x et y
+    dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
+    dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+
+    theta = 0
+    for i in range(12):
+        #print("iteration = ", i)
+        #print("theta = ", theta)
+        # Calcule le gradiant du SSD par rapport à p et q
+        cos = np.cos(theta)
+        sin = np.sin(theta)
+        #print("cos = ", cos)
+        #print("sin = ", sin)
+        x = np.arange(w)
+        y = np.arange(h)
+        a = (rotation(I, theta) - J)
+        b = np.dot(rotation(dIx, theta), (-x*sin-y*cos))
+        c = np.dot(rotation(dIy, theta), (x*cos-y*sin))
+        #print("a=",a)
+        #print("b=",b)
+        #print(rotation(dIx, theta))
+        #print("c=",c)
+        #print(rotation(dIx, theta))
+        grad_SSD_theta = 2 * sum(np.dot(a, (b + c)))
+        #print("SSD = ", grad_SSD_theta)
+
+        if grad_SSD_theta == 0:
+            break
+
+        # Recalcule p et q pour améliorer le décalage
+        theta = theta - grad_SSD_theta
+
+    return rotation(I, theta)
