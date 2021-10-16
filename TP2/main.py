@@ -64,5 +64,15 @@ def main():
         plt.imshow(newI)
         plt.show()
 
+    if args.question == "4c" :
+        # Montre l'image de base
+        img = plt.imread(images[4])
+        plt.imshow(img)
+        plt.show()
+        # Montre l'image après la translation
+        imgT = RecalageIconique.rotation(img, 50)
+        plt.imshow(imgT)
+        plt.show()
+
 if __name__ == "__main__":
     main()
