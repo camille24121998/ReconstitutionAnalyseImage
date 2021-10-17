@@ -37,27 +37,6 @@ def JoinHist(I, J, bin) :
         y = []
         z = []
 
-        '''a = [1, 2, 3, 4, 5, 6, 7 ]
-        b = a[0:3]+a[4:7]
-        print(b)'''
-
-        '''while(len(image1Copy) != 0) :
-            val1 = image1Copy[0]
-            val2 = image2Copy[0]
-            for i in range(0, len(image1Copy)) :
-                if (image1Copy[i]==val1 and image2Copy[i]==val2) :
-                    indexes.append(i)
-            x.append(val1)
-            y.append(val2)
-            z.append(len(indexes))
-            image1Copy = np.delete(image1Copy, indexes)
-            image2Copy = np.delete(image2Copy, indexes)
-            indexes = []
-            print(image1Copy)
-            print(len(image1Copy))
-            print(image2Copy)
-            print(len(image2Copy))'''
-
         while(len(image1Copy) != 0) :
             val1 = image1Copy[0]
             indexes1 = np.where(image1Copy == val1)[0]
@@ -70,63 +49,16 @@ def JoinHist(I, J, bin) :
             image1Copy = np.delete(image1Copy, indexes)
             image2Copy = np.delete(image2Copy, indexes)
             indexes = []
-            '''print(image1Copy)
-            print(len(image1Copy))
-            print(image2Copy)
-            print(len(image2Copy))'''
-
-
-
-        '''unique, counts = np.unique(tuples, return_counts=True)
-        print("Unique : \n", unique)
-        print("Counts : \n", counts)
-
-        val = tuples[0]
-        print(val)
-        occurrences = np.count_nonzero(tuples == val)
-        print(occurrences)
-        tuples = tuples[tuples != val]
-        print(tuples)'''
 
         plot3 = plt.figure(3)
         ax = plt.axes()
         ax.set_facecolor('#000090')
         plt.scatter(x, y, s=1, c=z, cmap='rainbow')
         plt.title('Histogramme conjoint')
-        plt.xlabel('x')
-        plt.ylabel('y')
-
-        '''plot4 = plt.figure(4)
-        plt.hist2d(image1.flatten(), image2.flatten(), bins=1000)'''
+        plt.xlabel('Image 1')
+        plt.ylabel('Image 2')
 
         plt.show()
-
-    '''
-    plot1 = plt.figure(1)
-    image1 = (np.matrix(plt.imread(I))).flatten()
-    plt.imshow(image1)
-
-    print("Image1 : ", image1)
-    print(image1[0][0])
-
-    plot2 = plt.figure(2)
-    image2 = (np.matrix(plt.imread(J))).flatten()
-    plt.imshow(image2)
-
-    plot3 = plt.figure(3)
-    plt.hist(image1)
-
-    print(np.shape(image1))
-
-    plot4 = plt.figure(4)
-    #h, x, y = plt.hist2d(image1[0],image2[0])
-    #plt.hexbin(image1,image2, bins=bin)
-
-    #plot5 = plt.figure(5)
-    #np.histogram2d(image1[0], image2[0])
-
-    plt.show()
-    '''
 
 
 ############
