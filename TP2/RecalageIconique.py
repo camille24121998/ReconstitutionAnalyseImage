@@ -45,6 +45,7 @@ def translation(I, p, q):
 #
 def minSSDtranslation(I, J):
     h, w = I.shape[:2]
+    energieSSD = np.array([])
 
     p = 0
     q = 0
@@ -81,6 +82,14 @@ def minSSDtranslation(I, J):
         print("newp = ", p)
         print("newq = ", q)
 
+        # Calcule du SSD
+        SSD = np.sum(np.power(np.add(translation(I, p, q), -J), 2))
+        energieSSD = np.append(energieSSD, SSD)
+        print("energieSSD = ", energieSSD)
+
+    plt.plot(energieSSD)
+    plt.show()
+
     return translation(I, p, q)
 
 #
@@ -116,6 +125,8 @@ def rotation(I, theta):
 #
 def minSSDrotation(I, J):
     h, w = I.shape[:2]
+
+    energieSSD = np.array([])
 
     theta = 1
     for i in range(25):
@@ -163,6 +174,14 @@ def minSSDrotation(I, J):
         theta = theta - 0.0000000000001 / np.power(2, i) * grad_SSD_theta
         print("newt= ", theta)
 
+        # Calcule du SSD
+        SSD = np.sum(np.power(np.add(rotation(I, theta), -J), 2))
+        energieSSD = np.append(energieSSD, SSD)
+        print("energieSSD = ", energieSSD)
+
+    plt.plot(energieSSD)
+    plt.show()
+
     return rotation(I, theta)
 
 #
@@ -195,6 +214,8 @@ def transRot(I, p, q, theta):
 #
 def minSSD(I, J):
     h, w = I.shape[:2]
+
+    energieSSD = np.array([])
 
     p = 0
     q = 0
@@ -240,5 +261,13 @@ def minSSD(I, J):
         print("newp = ", p)
         print("newq = ", q)
         print("newt= ", theta)
+
+        # Calcule du SSD
+        SSD = np.sum(np.power(np.add(transRot(I, p, q, theta), -J), 2))
+        energieSSD = np.append(energieSSD, SSD)
+        print("energieSSD = ", energieSSD)
+
+    plt.plot(energieSSD)
+    plt.show()
 
     return transRot(I, p, q, theta)
