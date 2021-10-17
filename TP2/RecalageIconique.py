@@ -165,3 +165,80 @@ def minSSDrotation(I, J):
 
     return rotation(I, theta)
 
+#
+# transRot(I, p, q, theta)
+# retourne une nouvelle image correspondant à lʼimage I a laquelle on a appliqué une translation de p et q, et une rotation d'angle theta
+#
+def transRot(I, p, q, theta):
+    NewI = np.zeros(I.shape)
+    theta = theta * (np.pi / 180)
+    T = np.transpose(np.array([[np.cos(theta), -np.sin(theta), p], [np.sin(theta), np.cos(theta), q], [0, 0, 1]]))  # matrice de transformation
+    h, w = I.shape[:2]
+
+    # Pour chaque pixel, on recalcule sa nouvelle coordonné
+    for i in range(h):
+        for j in range(w):
+            origin = np.array([j, i, 1])
+            newXY = np.dot(T, origin)
+            newX = round(newXY[0])
+            newY = round(newXY[1])
+
+            # Si la nouvelle coordonnée est toujours dans l'image on y met le pixel de la coordonnée original
+            if 0 < newX < w and 0 < newY < h:
+                NewI[newY, newX] = I[i, j]
+
+    return NewI
+
+#
+# minSSD(I, J) retourne une nouvelle image correspondant à lʼimage I recalé sur l'image J
+# Cette fonction fait un recalage 2D en minimisant la SSD en utilisant des translations et rotation
+#
+def minSSD(I, J):
+    h, w = I.shape[:2]
+
+    p = 0
+    q = 0
+    theta = 1
+    for i in range(25):
+        print("Itération ", i)
+        # Translation de l'image I
+        I_tmp = transRot(I, p, q, theta)
+
+        # Ajoute des colonnes de 0 de chaque coté de l'image I
+        bigIx = np.c_[np.zeros(h), I_tmp, np.zeros(h)]
+        # Ajoute des lignes de 0 de chaque coté de l'image I
+        bigIy = np.r_[[np.zeros(w)], I_tmp, [np.zeros(w)]]
+
+        # Calcule les dérivés de l'image I par rapport à x et y
+        dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
+        dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+
+        # Calcule le gradiant du SSD par rapport à p, q et theta
+        grad_SSD_p = 2 * np.sum(np.multiply((translation(I, p, q) - J), dIx))
+        grad_SSD_q = 2 * np.sum(np.multiply((translation(I, p, q) - J), dIy))
+        cos = np.cos(theta)
+        sin = np.sin(theta)
+        x = np.arange(w)
+        y = np.arange(h)
+        a = (rotation(I, theta) - J)
+        b = np.multiply(dIx, np.matmul(-x.T * sin, -y * cos))
+        c = np.multiply(dIy, np.matmul(x.T * cos, -y * sin))
+        grad_SSD_theta = 2 * np.sum(np.multiply(a, (b + c)))
+
+        print("gradP = ", grad_SSD_p)
+        print("gradQ = ", grad_SSD_q)
+        print("gradTheta = ", grad_SSD_theta)
+
+        if grad_SSD_p == 0 and grad_SSD_q == 0 and grad_SSD_theta == 0:
+            break
+
+        # Recalcule p, q et theta pour améliorer le décalage
+        p = p - 0.00003 / np.power(2, i) * grad_SSD_p
+        q = q - 0.00003 / np.power(2, i) * grad_SSD_q
+        theta = theta - 0.0000000000001 / np.power(2, i) * grad_SSD_theta
+
+        print("newp = ", p)
+        print("newq = ", q)
+        print("newt= ", theta)
+
+    return transRot(I, p, q, theta)
