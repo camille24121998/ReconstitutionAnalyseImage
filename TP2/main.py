@@ -159,7 +159,7 @@ def main():
         plt.imshow(img)
         plt.show()
         # Montre l'image après la translation
-        imgT = RecalageIconique.translation(img, 100, 100)
+        imgT = RecalageIconique.translation(img, 12, 15)
         plt.imshow(imgT)
         plt.show()
 
@@ -182,6 +182,17 @@ def main():
         # Montre l'image après la translation
         imgT = RecalageIconique.rotation(img, 50)
         plt.imshow(imgT)
+        plt.show()
+
+    if args.question == "4d" :
+        I = plt.imread(images[2])
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(images[3])
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSDrotation(I, J)
+        plt.imshow(newI)
         plt.show()
 
 if __name__ == "__main__":
