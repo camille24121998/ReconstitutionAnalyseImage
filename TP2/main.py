@@ -134,10 +134,10 @@ def main():
         plt.show()
 
     if args.question == "4b" :
-        I = plt.imread(images[0])
+        I = plt.imread(images[1])
         plt.imshow(I)
         plt.show()
-        J = plt.imread(images[1])
+        J = plt.imread(images[0])
         plt.imshow(J)
         plt.show()
         newI = RecalageIconique.minSSDtranslation(I, J)
@@ -158,12 +158,38 @@ def main():
         I = plt.imread(images[2])
         plt.imshow(I)
         plt.show()
-        J = plt.imread(images[3])
+        J = plt.imread(images[0])
         plt.imshow(J)
         plt.show()
         newI = RecalageIconique.minSSDrotation(I, J)
         plt.imshow(newI)
         plt.show()
+
+    if args.question == "4e" :
+        I = plt.imread(images[3])
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(images[0])
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSD(I, J)
+        plt.imshow(newI)
+        plt.show()
+
+
+    if args.question == "test" :
+        i = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+        j = [
+            [1,1,1],
+            [2,2,2],
+            [3,3,3]
+        ]
+        print(np.multiply(i,j))
+
 
 if __name__ == "__main__":
     main()

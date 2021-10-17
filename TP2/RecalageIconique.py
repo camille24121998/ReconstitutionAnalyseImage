@@ -20,7 +20,7 @@ import glob
 # Merci à son auteur
 #
 def translation(I, p, q):
-    NewI = np.zeros(I.shape) # image translaté
+    NewI = np.zeros(I.shape)
     T = np.array([[1, 0, p], [0, 1, q], [0, 0, 1]]) # matrice de translation
     h, w = I.shape[:2]
 
@@ -44,56 +44,62 @@ def translation(I, p, q):
 # Cette fonction fait un recalage 2D en minimisant la SSD et considérant uniquement des translations
 #
 def minSSDtranslation(I, J):
-    e = 0.001
     h, w = I.shape[:2]
-
-    # Ajoute des colonnes de 0 de chaque coté de l'image I
-    bigIx = np.c_[np.zeros(h), I, np.zeros(h)]
-    # Ajoute des lignes de 0 de chaque coté de l'image I
-    bigIy = np.r_[[np.zeros(w)], I, [np.zeros(w)]]
-
-    # Calcule les dérivés de l'image I par rapport à x et y
-    dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
-    dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
 
     p = 0
     q = 0
-    for i in range(12):
+    for i in range(25):
+        print("Itération ", i)
+        # Translation de l'image I
+        I_tmp = translation(I, p, q)
+
+        # Ajoute des colonnes de 0 de chaque coté de l'image I
+        bigIx = np.c_[np.zeros(h), I_tmp, np.zeros(h)]
+        # Ajoute des lignes de 0 de chaque coté de l'image I
+        bigIy = np.r_[[np.zeros(w)], I_tmp, [np.zeros(w)]]
+
+        # Calcule les dérivés de l'image I par rapport à x et y
+        dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
+        dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+
         # Calcule le gradiant du SSD par rapport à p et q
-        grad_SSD_p = 2 * np.sum(np.multiply((translation(I, p, q) - J), translation(dIx, p, q)))
-        grad_SSD_q = 2 * np.sum(np.multiply((translation(I, p, q) - J), translation(dIy, p, q)))
+        grad_SSD_p = 2 * np.sum(np.multiply((translation(I, p, q) - J), dIx))
+        grad_SSD_q = 2 * np.sum(np.multiply((translation(I, p, q) - J), dIy))
 
         print("gradp = ", grad_SSD_p)
         print("gradq = ", grad_SSD_q)
-        if abs(grad_SSD_p) < e and abs(grad_SSD_q) < e:
+
+        if grad_SSD_p == 0 and grad_SSD_q == 0:
             break
 
         # Recalcule p et q pour améliorer le décalage
-        p = p - 1.0/(i+1) * grad_SSD_p
-        q = q - 1.0/(i+1) * grad_SSD_q
+        #p = p - 1.0/(i+1) * grad_SSD_p
+        #q = q - 1.0/(i+1) * grad_SSD_q
+        p = p - 0.00003/np.power(2, i) * grad_SSD_p
+        q = q - 0.00003/np.power(2, i) * grad_SSD_q
 
-        print("newp = ",p)
-        print("newq = ",q)
+        print("newp = ", p)
+        print("newq = ", q)
+
     return translation(I, p, q)
 
 #
 # rotation(I, theta) retourne une nouvelle image correspondant à lʼimage I a laquelle on a appliqué une rotation d'angle theta
-#
-# Pour faire cette fonction, j'ai repris la fonction tranlation,
-# mais le lien suivant m'a donnée l'astuce du int(x) pour ne pas avoir de chiffre à virgule :
+# Pour faire cette fonction, j'ai repris la fonction tranlation, et me suis inspiré du lien suivant pour quelque détail :
 #   https://medium.com/@bosssds65/how-to-rotate-image-using-only-numpy-in-15-lines-ddc1fca93c87
 # Merci à son auteur
 #
 def rotation(I, theta):
-    NewI = np.zeros(I.shape) # image translaté
-    T = np.array([[np.cos(theta), -np.sin(theta), 0.0], [np.sin(theta), np.cos(theta), 0.0], [0.0, 0.0, 1.0]]) # matrice de rotation
+    theta = theta * (np.pi/180)
+    NewI = np.zeros(I.shape)
+    R = np.transpose(np.array([[np.cos(theta), -np.sin(theta), 0.0], [np.sin(theta), np.cos(theta), 0.0], [0.0, 0.0, 1.0]])) # matrice de rotation
     h, w = I.shape[:2]
 
     # Pour chaque pixel, on recalcule sa nouvelle coordonné
     for i in range(h):
         for j in range(w):
             origin = np.array([j, i, 1])
-            newXY = np.dot(T, origin)
+            newXY = np.dot(R, origin)
             newX = round(newXY[0])
             newY = round(newXY[1])
 
@@ -111,19 +117,25 @@ def rotation(I, theta):
 def minSSDrotation(I, J):
     h, w = I.shape[:2]
 
-    # Ajoute des colonnes de 0 de chaque coté de l'image I
-    bigIx = np.c_[np.zeros(h), I, np.zeros(h)]
-    # Ajoute des lignes de 0 de chaque coté de l'image I
-    bigIy = np.r_[[np.zeros(w)], I, [np.zeros(w)]]
+    theta = 1
+    for i in range(25):
+        print("Itération ", i)
+        # Rotation de l'image I
+        I_tmp = rotation(I, theta)
+        #print("I_tmp = \n", I_tmp)
 
-    # Calcule les dérivés de l'image I par rapport à x et y
-    dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
-    dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+        # Ajoute des colonnes de 0 de chaque coté de l'image I
+        bigIx = np.c_[np.zeros(h), I_tmp, np.zeros(h)]
+        # Ajoute des lignes de 0 de chaque coté de l'image I
+        bigIy = np.r_[[np.zeros(w)], I_tmp, [np.zeros(w)]]
 
-    theta = 0
-    for i in range(12):
+        # Calcule les dérivés de l'image I par rapport à x et y
+        dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
+        dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
+
         #print("iteration = ", i)
         #print("theta = ", theta)
+
         # Calcule le gradiant du SSD par rapport à p et q
         cos = np.cos(theta)
         sin = np.sin(theta)
@@ -132,20 +144,24 @@ def minSSDrotation(I, J):
         x = np.arange(w)
         y = np.arange(h)
         a = (rotation(I, theta) - J)
-        b = np.dot(rotation(dIx, theta), (-x*sin-y*cos))
-        c = np.dot(rotation(dIy, theta), (x*cos-y*sin))
+        b = np.multiply(dIx, np.matmul(-x.T * sin, -y * cos))
+        c = np.multiply(dIy, np.matmul(x.T * cos, -y * sin))
         #print("a=",a)
         #print("b=",b)
-        #print(rotation(dIx, theta))
         #print("c=",c)
-        #print(rotation(dIx, theta))
-        grad_SSD_theta = 2 * sum(np.dot(a, (b + c)))
-        #print("SSD = ", grad_SSD_theta)
+        #print(dIx)
+        #print(rotation(dIy, theta))
+        grad_SSD_theta = 2 * np.sum(np.multiply(a, (b + c)))
+
+        print("grad_SSD = ", grad_SSD_theta)
 
         if grad_SSD_theta == 0:
             break
 
         # Recalcule p et q pour améliorer le décalage
-        theta = theta - 1.0/(i+1) * grad_SSD_theta
+        #theta = theta - 1.0/(i+1) * grad_SSD_theta
+        theta = theta - 0.0000000000001 / np.power(2, i) * grad_SSD_theta
+        print("newt= ", theta)
 
     return rotation(I, theta)
+
