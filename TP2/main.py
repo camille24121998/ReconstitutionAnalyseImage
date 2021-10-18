@@ -32,7 +32,7 @@ def transformeImageIntoMatrix(I, J) :
 #   Partie 1 : Histogramme conjoint    #
 ########################################
 
-def JoinHist(I, J, bin) :
+def JoinHist(I, J) :
     (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
 
     if(sameDim == True) :
@@ -98,7 +98,48 @@ def IM(I, J) :
     (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
 
     if(sameDim == True) :
-        (x, y, h) = JoinHist(I, J, 100)
+        (x, y, h) = JoinHist(I, J)
+        xCopy = np.array(x)
+        yCopy = np.array(y)
+        hCopy = np.array(h)
+
+        sumH = np.sum(h)
+        MI = 0
+        for i in range(0, len(xCopy)-1):
+            pij = (hAB(xCopy[i], yCopy[i], xCopy, yCopy, hCopy)/sumH)
+            MI = MI + pij*math.log((pij/(sumB(xCopy[i], xCopy, yCopy, hCopy)*sumA(yCopy[i], xCopy, yCopy, hCopy))), 2)
+            print(MI)
+        plt.show()
+
+def hAB(a, b, x, y, h) :
+    indexesX = np.where(x == a)[0]
+    indexesY = np.where(y == b)[0]
+    indexes = np.intersect1d(indexesX, indexesY)
+    if(len(indexes)>0) :
+        index = indexes[0]
+    else :
+        index = -1
+    return h[index]
+
+def sumB(a, x, y, h) :
+    indexesX = np.where(x == a)[0]
+    sumH = np.sum(h)
+    sumB = 0
+    if(len(indexesX)>0) :
+        for i in indexesX :
+            sumB = hAB(a, y[i], x, y, h)
+        sumB = sumB/sumH
+    return sumB
+
+def sumA(b, x, y, h) :
+    indexesY = np.where(y == b)[0]
+    sumH = np.sum(h)
+    sumA = 0
+    if(len(indexesY)>0) :
+        for i in indexesY :
+            sumA = hAB(x[i], b, x, y, h)
+        sumA = sumA/sumH
+    return sumA
 
 
 ############
@@ -125,7 +166,7 @@ def main():
     if args.question == "1":
         #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
         #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
-        JoinHist("Data/I2.jpg", "Data/J2.jpg", 100)
+        JoinHist("Data/I2.jpg", "Data/J2.jpg")
         plt.show()
 
     if args.question == "2a" :
@@ -135,7 +176,7 @@ def main():
         CR("Data/I2.jpg", "Data/J2.jpg")
 
     if args.question == "2c" :
-        IM("Data/I2.jpg", "Data/J2.jpg")
+        IM("Data/BrainMRI_1.jpg", "Data/BrainMRI_4.jpg")
 
     if args.question == "3a":
         x, y, z = (20, 20, 4)
