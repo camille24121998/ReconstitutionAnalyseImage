@@ -1,5 +1,6 @@
 import numpy as np
 import nibabel as nib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import argparse
 from os import listdir
@@ -25,7 +26,15 @@ def JoinHist(I, J, bin) :
     print(image2)
     print(np.shape(image2))
 
+    sameDim = False
     if(np.shape(image1) != np.shape(image2)) :
+        sameDim = True
+    if(np.size(image1)>np.size(image2) and np.size(image1)==(np.shape(image1)[2]*np.size(image2))) :
+        sameDim = True
+    if(np.size(image2)>np.size(image1) and np.size(image2)==(np.shape(image2)[2]*np.size(image1))) :
+        sameDim = True
+
+    if(sameDim == False) :
         print("ERREUR : Les images ne sont pas de la même taille, l'histogramme conjoint ne peut pas être réaliser")
     else :
         image1Copy = image1.flatten()
@@ -37,7 +46,7 @@ def JoinHist(I, J, bin) :
         y = []
         z = []
 
-        while(len(image1Copy) != 0) :
+        while(len(image1Copy) != 0 or len(image2Copy) != 0) :
             val1 = image1Copy[0]
             indexes1 = np.where(image1Copy == val1)[0]
             val2 = image2Copy[0]
@@ -53,13 +62,13 @@ def JoinHist(I, J, bin) :
         plot3 = plt.figure(3)
         ax = plt.axes()
         ax.set_facecolor('#000090')
+        print(max(z))
         plt.scatter(x, y, s=1, c=z, cmap='rainbow')
         plt.title('Histogramme conjoint')
         plt.xlabel('Image 1')
         plt.ylabel('Image 2')
 
         plt.show()
-
 
 ############
 #   Main   #
@@ -83,8 +92,9 @@ def main():
     images = [args.path_images+f for f in listdir(args.path_images) if isfile(join(args.path_images, f))]
 
     if args.question == "1a":
-        JoinHist("Data/I2.jpg", "Data/J2.jpg", 30)
-
+        #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
+        #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
+        JoinHist("Data/I1.png", "Data/J1.png", 30)
     if args.question == "4a" :
         # Montre l'image de base
         img = plt.imread(images[4])
