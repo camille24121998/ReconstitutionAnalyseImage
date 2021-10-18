@@ -2,12 +2,13 @@ import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 import argparse
-import math
 from os import listdir
 from os.path import isfile, join
 
 import RecalageIconique
 import TransformationSpatiale
+import histogrammeConjoint
+import critereSimilarite
 
 ########################################################################
 #   Fonction auxiliere d'affichage d'image et de test de dimensions    #
@@ -27,120 +28,6 @@ def transformeImageIntoMatrix(I, J) :
         print("ERREUR : Les images ne sont pas de la même taille, l'histogramme conjoint ne peut pas être réaliser")
 
     return (sameDim, image1.flatten(), image2.flatten())
-
-########################################
-#   Partie 1 : Histogramme conjoint    #
-########################################
-
-def JoinHist(I, J) :
-    (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
-
-    if(sameDim == True) :
-        indexes = []
-        x = []
-        y = []
-        z = []
-
-        while(len(image1Copy) != 0 and len(image2Copy) != 0) :
-            val1 = image1Copy[0]
-            indexes1 = np.where(image1Copy == val1)[0]
-            val2 = image2Copy[0]
-            indexes2 = np.where(image2Copy == val2)[0]
-            indexes = np.intersect1d(indexes1, indexes2)
-            x.append(val1)
-            y.append(val2)
-            z.append(len(indexes))
-            image1Copy = np.delete(image1Copy, indexes)
-            image2Copy = np.delete(image2Copy, indexes)
-            indexes = []
-
-        plot3 = plt.figure(3)
-        ax = plt.axes()
-        ax.set_facecolor('#000090')
-        plt.scatter(x, y, s=1, c=z, cmap='rainbow')
-        plt.title('Histogramme conjoint')
-        plt.xlabel('Image 1')
-        plt.ylabel('Image 2')
-
-        return (x, y, z)
-
-##########################################
-#   Partie 2 :  Critère de similarité    #
-##########################################
-
-def SSD(I, J) :
-    (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
-
-    if(sameDim == True) :
-        image1Copy = image1.flatten()
-        image2Copy = image2.flatten()
-        ssd = (np.sum(image1Copy) - np.sum(image2Copy))**2
-        print("SSD = ", ssd)
-        return ssd
-
-def CR(I, J) :
-    (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
-
-    if(sameDim == True) :
-        moyI1 = np.average(image1Copy)
-        moyI2 = np.average(image2Copy)
-        diffAlaMoyI1 = np.subtract(image1Copy, moyI1)
-        diffAlaMoyI2 = np.subtract(image2Copy, moyI2)
-        numerateur = np.sum(diffAlaMoyI1*diffAlaMoyI2)
-        varianceI1 = math.sqrt(np.sum(np.power(diffAlaMoyI1, 2)))
-        varianceI2 = math.sqrt(np.sum(np.power(diffAlaMoyI2, 2)))
-        denominateur = varianceI1*varianceI2
-        cr = numerateur/denominateur
-        print("Coefficient de corelation : ", cr)
-        return cr
-
-def IM(I, J) :
-    (sameDim, image1Copy, image2Copy,) = transformeImageIntoMatrix(I, J)
-
-    if(sameDim == True) :
-        (x, y, h) = JoinHist(I, J)
-        xCopy = np.array(x)
-        yCopy = np.array(y)
-        hCopy = np.array(h)
-
-        sumH = np.sum(h)
-        MI = 0
-        for i in range(0, len(xCopy)-1):
-            pij = (hAB(xCopy[i], yCopy[i], xCopy, yCopy, hCopy)/sumH)
-            MI = MI + pij*math.log((pij/(sumB(xCopy[i], xCopy, yCopy, hCopy)*sumA(yCopy[i], xCopy, yCopy, hCopy))), 2)
-            print(MI)
-        plt.show()
-
-def hAB(a, b, x, y, h) :
-    indexesX = np.where(x == a)[0]
-    indexesY = np.where(y == b)[0]
-    indexes = np.intersect1d(indexesX, indexesY)
-    if(len(indexes)>0) :
-        index = indexes[0]
-    else :
-        index = -1
-    return h[index]
-
-def sumB(a, x, y, h) :
-    indexesX = np.where(x == a)[0]
-    sumH = np.sum(h)
-    sumB = 0
-    if(len(indexesX)>0) :
-        for i in indexesX :
-            sumB = hAB(a, y[i], x, y, h)
-        sumB = sumB/sumH
-    return sumB
-
-def sumA(b, x, y, h) :
-    indexesY = np.where(y == b)[0]
-    sumH = np.sum(h)
-    sumA = 0
-    if(len(indexesY)>0) :
-        for i in indexesY :
-            sumA = hAB(x[i], b, x, y, h)
-        sumA = sumA/sumH
-    return sumA
-
 
 ############
 #   Main   #
@@ -166,17 +53,25 @@ def main():
     if args.question == "1":
         #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
         #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
-        JoinHist("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        if(sameDim == True) :
+            histogrammeConjoint.JoinHist(image1Copy, image2Copy)
         plt.show()
 
     if args.question == "2a" :
-        SSD("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        if(sameDim == True) :
+            critereSimilarite.SSD(image1Copy, image2Copy)
 
     if args.question == "2b" :
-        CR("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        if(sameDim == True) :
+            critereSimilarite.CR(image1Copy, image2Copy)
 
     if args.question == "2c" :
-        IM("Data/BrainMRI_1.jpg", "Data/BrainMRI_4.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        if(sameDim == True) :
+            critereSimilarite.IM(image1Copy, image2Copy)
 
     if args.question == "3a":
         x, y, z = (20, 20, 4)
