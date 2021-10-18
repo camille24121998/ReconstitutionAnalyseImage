@@ -6,6 +6,7 @@ from os import listdir
 from os.path import isfile, join
 
 import RecalageIconique
+import TransformationSpatiale
 
 ########################################
 #   Partie 1 : Histogramme conjoint    #
@@ -84,6 +85,119 @@ def main():
 
     if args.question == "1a":
         JoinHist("Data/I2.jpg", "Data/J2.jpg", 30)
+
+    if args.question == "3a":
+        x, y, z = (20, 20, 4)
+        xs, ys, zs = TransformationSpatiale.genererGrille(x,y,z)
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        ax.set_xlim([0, x*2])
+        ax.set_ylim([0, y*2])
+        ax.set_zlim([0, z*2+15])
+
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+
+        ax.scatter(xs, ys, zs)
+        plt.show()
+
+    if args.question == "3b":
+        x, y, z = (20, 20, 4)
+        xs, ys, zs = TransformationSpatiale.genererGrille(x,y,z)
+
+        theta = 13
+        omega = 0
+        phi = 0 
+        p = 0 
+        q = 0
+        r = 10 
+        Transformation_Matrix = TransformationSpatiale.trans_rigide(theta,omega,phi,p,q,r)
+        
+        for p in range(x*y*z) :
+            trans_p = np.matmul(Transformation_Matrix,np.transpose([xs[p],ys[p],zs[p],1]))
+            xs[p] = trans_p[0]
+            ys[p] = trans_p[1]
+            zs[p] = trans_p[2]
+
+
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        ax.set_xlim([0, x*2])
+        ax.set_ylim([0, y*2])
+        ax.set_zlim([0, z*2+15])
+
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+
+        ax.scatter(xs, ys, zs)
+        plt.show()
+
+    if args.question == "3c":
+        x, y, z = (20, 20, 4)
+        xs, ys, zs = TransformationSpatiale.genererGrille(x,y,z)
+
+        s = 0.5
+        theta = 90 
+        omega = 45
+        phi = 0
+        p = 0 
+        q = 0
+        r = 0
+        Transformation_Matrix = TransformationSpatiale.similitude(s,theta,omega,phi,p,q,r)
+        
+        for p in range(x*y*z) :
+            trans_p = np.matmul(Transformation_Matrix,np.transpose([xs[p],ys[p],zs[p],1]))
+            xs[p] = trans_p[0]
+            ys[p] = trans_p[1]
+            zs[p] = trans_p[2]
+
+
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        ax.set_xlim([0, x*2])
+        ax.set_ylim([0, y*2])
+        ax.set_zlim([0, z*2+15])
+
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+
+        ax.scatter(xs, ys, zs)
+        plt.show()
+
+    if args.question == "3d":
+        x, y, z = (20, 20, 4)
+        xs, ys, zs = TransformationSpatiale.genererGrille(x,y,z)
+
+        M1 = [[0.9045,-0.3847,-0.1840,10.0000],[0.2939, 0.8750,-0.3847,10.0000],[0.3090, 0.2939, 0.9045,10.0000],[0,0,0,1.0000]]
+        M2 = [[-0.0000,-0.2598, 0.1500,-3.0000],[0.0000,-0.1500,-0.2598, 1.5000],[0.3000,-0.0000, 0.0000,0],[0,0,0,1.0000]]
+        M3 = [[0.7182,-1.3727,-0.5660, 1.8115],[-1.9236,-4.6556,-2.5512, 0.2873],[-0.6426,-1.7985,-1.6285, 0.7404],[0,0,0,1.0000]]
+
+        for p in range(x*y*z) :
+            trans_p = np.matmul(M2,np.transpose([xs[p],ys[p],zs[p],1]))
+            xs[p] = trans_p[0]
+            ys[p] = trans_p[1]
+            zs[p] = trans_p[2]
+
+
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+
+        ax.set_xlim([0, x*2])
+        ax.set_ylim([0, y*2])
+        ax.set_zlim([0, z*2+15])
+
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+
+        ax.scatter(xs, ys, zs)
+        plt.show()
 
     if args.question == "4a" :
         # Montre l'image de base
