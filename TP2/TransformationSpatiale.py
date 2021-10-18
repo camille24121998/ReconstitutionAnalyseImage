@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+####################################################################################################
+#genererGrille génère une grille régulière de point 3D de taille x*y*z
+#Prends en entrées 3 scalaires correspondants aux dimensions de la grille à générer
+#Renvoie 3 listes correspondant aux coordonnées x, y et z, chacunes de taille x*y*z
+####################################################################################################
 def genererGrille(x,y,z) :
 	xs = np.arange(0,x)
 	xs = np.tile(xs,y*z)
@@ -15,6 +20,16 @@ def genererGrille(x,y,z) :
 
 	return xs, ys, zs
 
+#####################################################################################################
+#trans_rigide génère la matrice de transformation avec les paramètres theta, omega, phi, p, q et r
+#theta : Angle de rotation sur l'axe x
+#omega : Angle de rotation sur l'axe y
+#phi : Angle de rotation sur l'axe z
+#p : distance de translation sur l'axe x
+#q : distance de translation sur l'axe y
+#r : distance de translation sur l'axe z
+#Renvoie la matrice de transformation
+#####################################################################################################
 def trans_rigide(theta, omega, phi, p, q, r):
 	theta = theta * (np.pi/180)
 	omega = omega * (np.pi/180)
@@ -29,6 +44,17 @@ def trans_rigide(theta, omega, phi, p, q, r):
 
 	return Transformation_Matrix
 
+#####################################################################################################
+#similitude génère la matrice de transformation avec scaling avec les paramètres s, theta, omega, phi, p, q et r
+#s : rapport d'homothétie
+#theta : Angle de rotation sur l'axe x
+#omega : Angle de rotation sur l'axe y
+#phi : Angle de rotation sur l'axe z
+#p : distance de translation sur l'axe x
+#q : distance de translation sur l'axe y
+#r : distance de translation sur l'axe z
+#Renvoie la matrice de transformation
+#####################################################################################################
 def similitude(s, theta,  omega,  phi, p, q, r) :
 	scaling_matrix = s * np.identity(4)
 	scaling_matrix[3,3] = 1
