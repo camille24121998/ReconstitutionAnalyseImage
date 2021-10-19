@@ -11,7 +11,7 @@ def JoinHist(image1Copy, image2Copy) :
     indexes = [] # Cette liste contiendra, à chaque itération, les indices de chaque apparition d'un meme couple de valeur
     x = [] # x contiendra les valeurs de image1Copy sans répétitions des couples
     y = [] # y contiendra les valeurs de image2Copy sans répétitions des couples
-    z = [] # z contiendra le nombre d'itération de chaque couple (x, y)
+    z = [] # z contiendra le nombre d'occurence de chaque couple (x, y)
     # Tant que tous les couples n'ont pas été parcourus :
     while(len(image1Copy) != 0 and len(image2Copy) != 0) :
         # On récupere un coupe (val1, val2)
