@@ -14,7 +14,7 @@ import critereSimilarite
 #   Fonction auxiliere d'affichage d'image et de test de dimensions    #
 ########################################################################
 
-def transformeImageIntoMatrix(I, J) :
+def transformeImageIntoVector(I, J) :
     plot1 = plt.figure(1)
     image1 = plt.imread(I)
     plt.imshow(image1)
@@ -39,7 +39,7 @@ def parse_args():
                    help="Dossier des images à traiter")
 
     p.add_argument('question',
-                   help="Question à tester - ex : 1a")
+                   help="Question à tester - valeurs possibles : \n\t 1 \n\t 2a \n\t 2b \n\t 2c \n\t 3a \n\t 3b \n\t 3c \n\t 3d \n\t 4a \n\t 4b \n\t 4c \n\t 4d \n\t 4e")
 
     arguments = p.parse_args()
 
@@ -53,23 +53,23 @@ def main():
     if args.question == "1":
         #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
         #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/J2.jpg")
         if(sameDim == True) :
             histogrammeConjoint.JoinHist(image1Copy, image2Copy)
         plt.show()
 
     if args.question == "2a" :
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/J2.jpg")
         if(sameDim == True) :
             critereSimilarite.SSD(image1Copy, image2Copy)
 
     if args.question == "2b" :
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/J2.jpg")
         if(sameDim == True) :
             critereSimilarite.CR(image1Copy, image2Copy)
 
     if args.question == "2c" :
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoMatrix("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/J2.jpg")
         if(sameDim == True) :
             critereSimilarite.IM(image1Copy, image2Copy)
 
