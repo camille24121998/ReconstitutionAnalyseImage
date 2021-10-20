@@ -35,11 +35,28 @@ def transformeImageIntoVector(I, J) :
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawTextHelpFormatter)
+    """
     p.add_argument('path_images',
                    help="Dossier des images à traiter")
 
     p.add_argument('question',
                    help="Question à tester - valeurs possibles : \n\t 1 \n\t 2a \n\t 2b \n\t 2c \n\t 3a \n\t 3b \n\t 3c \n\t 3d \n\t 4a \n\t 4b \n\t 4c \n\t 4d \n\t 4e")
+    """
+    p.add_argument('fonction',
+                   help="Fonctionnalité à utiliser \n valeur possible :" 
+                        "\n\tminSSDtranslation"
+                        "\n\tminSSDrotation"
+                        "\n\tminSSD")
+
+    p.add_argument('imageI',
+                   help="Image à traiter",
+                   nargs='?',
+                   default="Data/BrainMRI_2.jpg")
+
+    p.add_argument('imageJ',
+                   help="Image cible",
+                   nargs='?',
+                   default="Data/BrainMRI_1.jpg")
 
     arguments = p.parse_args()
 
@@ -48,8 +65,45 @@ def parse_args():
 def main():
     args = parse_args()
 
-    images = [args.path_images+f for f in listdir(args.path_images) if isfile(join(args.path_images, f))]
 
+    ############
+    # Partie 4 #
+    ############
+    if args.fonction == "minSSDtranslation":
+        I = plt.imread(args.imageI)
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(args.imageJ)
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSDtranslation(I, J)
+        plt.imshow(newI)
+        plt.show()
+
+    if args.fonction == "minSSDrotation":
+        I = plt.imread(args.imageI)
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(args.imageJ)
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSDrotation(I, J)
+        plt.imshow(newI)
+        plt.show()
+
+    if args.fonction == "minSSD":
+        I = plt.imread(args.imageI)
+        plt.imshow(I)
+        plt.show()
+        J = plt.imread(args.imageJ)
+        plt.imshow(J)
+        plt.show()
+        newI = RecalageIconique.minSSD(I, J)
+        plt.imshow(newI)
+        plt.show()
+
+#images = [args.path_images+f for f in listdir(args.path_images) if isfile(join(args.path_images, f))]
+"""
     if args.question == "1":
         #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
         #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
@@ -252,7 +306,7 @@ def main():
             [3,3,3]
         ]
         print(np.multiply(i,j))
-
+"""
 
 if __name__ == "__main__":
     main()
