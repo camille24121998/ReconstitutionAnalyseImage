@@ -53,7 +53,7 @@ def main():
     if args.question == "1":
         #I2/J2 ok, BrainMRI_1/BrainMRI_2/BrainMRI_3/BrainMRI_4 ok, I3/J3 ok, I4/J4 ok, I5/J5 ok, I6/J6 ok
         #I1/J1 pas de la même taille (512, 512, 4) et (512, 512)
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/I2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I1.png", "Data/J1.png")
         if(sameDim == True) :
             histogrammeConjoint.JoinHist(image1Copy, image2Copy)
         plt.show()
@@ -64,12 +64,12 @@ def main():
             critereSimilarite.SSD(image1Copy, image2Copy)
 
     if args.question == "2b" :
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I2.jpg", "Data/J2.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I6.jpg", "Data/J6.jpg")
         if(sameDim == True) :
             critereSimilarite.CR(image1Copy, image2Copy)
 
     if args.question == "2c" :
-        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I3.jpg", "Data/J3.jpg")
+        (sameDim, image1Copy, image2Copy) = transformeImageIntoVector("Data/I6.jpg", "Data/J6.jpg")
         if(sameDim == True) :
             critereSimilarite.IM(image1Copy, image2Copy)
 

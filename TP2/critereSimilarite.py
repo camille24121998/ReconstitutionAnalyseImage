@@ -11,7 +11,7 @@ import histogrammeConjoint
 # La fonction SSD calcule, affiche et retourne la différence des somme au carré de deux images
 # image1Copy et image2Copy sont des vecteurs contenant les images
 def SSD(image1Copy, image2Copy) :
-    ssd = (np.sum(image1Copy) - np.sum(image2Copy))**2
+    ssd = np.sum(np.power(image1Copy - image2Copy, 2))
     print("SSD = ", ssd)
     return ssd
 
@@ -75,7 +75,7 @@ def sumB(a, x, y, h) :
     sumB = 0
     if(len(indexesX)>0) :
         for i in indexesX :
-            sumB = sumbB + hAB(a, y[i], x, y, h)
+            sumB = sumB + hAB(a, y[i], x, y, h)
     return sumB
 # Fonction auxiliere à la donction IM
 # Cette fonction calcule la somme de toutes les intensités dans x correspondant à une intensité b dans y
