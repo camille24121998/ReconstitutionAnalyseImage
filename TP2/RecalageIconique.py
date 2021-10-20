@@ -1,11 +1,5 @@
 import numpy as np
-import scipy.ndimage
-from scipy.ndimage import affine_transform
-import nibabel as nib
 import matplotlib.pyplot as plt
-import imageio
-import argparse
-import glob
 
 ########################################
 #   Partie 4 : Recalage iconique 2D    #
@@ -51,6 +45,9 @@ def minSSDtranslation(I, J):
     q = 0
     for i in range(25):
         print("Itération ", i)
+        print("p = ", p)
+        print("q = ", q)
+
         # Translation de l'image I
         I_tmp = translation(I, p, q)
 
@@ -74,13 +71,8 @@ def minSSDtranslation(I, J):
             break
 
         # Recalcule p et q pour améliorer le décalage
-        #p = p - 1.0/(i+1) * grad_SSD_p
-        #q = q - 1.0/(i+1) * grad_SSD_q
         p = p - 0.00003/np.power(2, i) * grad_SSD_p
         q = q - 0.00003/np.power(2, i) * grad_SSD_q
-
-        print("newp = ", p)
-        print("newq = ", q)
 
         # Calcule du SSD
         SSD = np.sum(np.power(translation(I, p, q)-J, 2))
@@ -131,9 +123,9 @@ def minSSDrotation(I, J):
     theta = 1
     for i in range(25):
         print("Itération ", i)
+        print("theta = ", theta)
         # Rotation de l'image I
         I_tmp = rotation(I, theta)
-        #print("I_tmp = \n", I_tmp)
 
         # Ajoute des colonnes de 0 de chaque coté de l'image I
         bigIx = np.c_[np.zeros(h), I_tmp, np.zeros(h)]
@@ -144,35 +136,23 @@ def minSSDrotation(I, J):
         dIx = np.array(bigIx[:, 0:-2] - bigIx[:, 2:])
         dIy = np.array(bigIy[0:-2, :] - bigIy[2:, :])
 
-        #print("iteration = ", i)
-        #print("theta = ", theta)
-
         # Calcule le gradiant du SSD par rapport à p et q
         cos = np.cos(theta)
         sin = np.sin(theta)
-        #print("cos = ", cos)
-        #print("sin = ", sin)
         x = np.arange(w)
         y = np.arange(h)
         a = (rotation(I, theta) - J)
         b = np.multiply(dIx, np.matmul(-x.T * sin, -y * cos))
         c = np.multiply(dIy, np.matmul(x.T * cos, -y * sin))
-        #print("a=",a)
-        #print("b=",b)
-        #print("c=",c)
-        #print(dIx)
-        #print(rotation(dIy, theta))
         grad_SSD_theta = 2 * np.sum(np.multiply(a, (b + c)))
 
-        print("grad_SSD = ", grad_SSD_theta)
+        print("gradtheta = ", grad_SSD_theta)
 
         if grad_SSD_theta == 0:
             break
 
         # Recalcule p et q pour améliorer le décalage
-        #theta = theta - 1.0/(i+1) * grad_SSD_theta
         theta = theta - 0.0000000000001 / np.power(2, i) * grad_SSD_theta
-        print("newt= ", theta)
 
         # Calcule du SSD
         SSD = np.sum(np.power(rotation(I, theta) - J, 2))
@@ -222,6 +202,10 @@ def minSSD(I, J):
     theta = 1
     for i in range(25):
         print("Itération ", i)
+        print("p = ", p)
+        print("q = ", q)
+        print("theta = ", theta)
+
         # Translation de l'image I
         I_tmp = transRot(I, p, q, theta)
 
@@ -257,10 +241,6 @@ def minSSD(I, J):
         p = p - 0.00003 / np.power(2, i) * grad_SSD_p
         q = q - 0.00003 / np.power(2, i) * grad_SSD_q
         theta = theta - 0.0000000000001 / np.power(2, i) * grad_SSD_theta
-
-        print("newp = ", p)
-        print("newq = ", q)
-        print("newt= ", theta)
 
         # Calcule du SSD
         SSD = np.sum(np.power(transRot(I, p, q, theta) - J, 2))
