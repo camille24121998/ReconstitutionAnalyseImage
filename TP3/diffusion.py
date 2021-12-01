@@ -8,6 +8,75 @@ import dipy.reconst.dti as dti
 import random
 from math import degrees
 from time import time
+import argparse
+
+def parse_args():
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawTextHelpFormatter)
+
+    p.add_argument('img',
+                   help="Image à traiter",
+                   nargs='?')
+
+    p.add_argument('gradient',
+                   help="Fichier texte b_vec et b_val",
+                   nargs='?')
+
+    p.add_argument('output_filename',
+                   help="Fichier texte b_vec et b_val",
+                   nargs='?')
+
+    arguments = p.parse_args()
+
+    return arguments
+
+def main():
+    args = parse_args()
+
+    if(args.img is None) :
+    	print("Nom de l'image a traiter manquant")
+    	return -1
+    if(args.gradient is None) :
+    	print("Nom du fichier de gradient manquant")
+    	return -1
+    if(args.output_filename is None) :
+    	print("Nom du fichier de sortie manquant")
+    	return -1
+
+    img_filename = args.img
+    grad_filename = args.gradient
+    output_filename = args.output_filename
+
+    print("Loading Image\n")
+    data = nib.load(img_filename)
+    img = data.get_fdata()
+
+    print("Loading b_vec and b_val\n")
+    b_vec, b_val = get_b_vec_b_val(grad_filename)
+
+    print("Calcul tensors\n")
+    D, mask = estimation_tenseur(img,b_vec,b_val)
+
+    print("Tensor 2D to 3D\n")
+    D_mat = tensor_2D_to_3D(D,mask)
+
+    print("Estimation FA\n")
+    fa, eigenvectors, eigenvalues = estimation_fa(D_mat,mask)
+
+    print("Génération tractographie\n")
+    tractographie(fa,eigenvectors,eigenvalues,data,output_filename)
+
+    print("Done")
+
+def get_b_vec_b_val(filename) :
+    txt = open(filename).read()
+    arr = np.array(txt.split())
+    arr = arr.reshape(-1,4)
+    arr = arr.astype(float)
+
+    b_vec = arr[:,:3]
+    b_val = arr[:,3]
+    return b_vec, b_val
 
 def estimation_tenseur(img_data, b_vec, b_val) :
 	s0 = img_data[:,:,:,0]
@@ -16,18 +85,14 @@ def estimation_tenseur(img_data, b_vec, b_val) :
 		if(s0[i,j,k] > 700) :
 			mask.append([i,j,k])
 	mask = np.array(mask)		
-	print("Mask shape : ", mask.shape)
 
 	X = np.zeros((len(img_data),len(img_data[0]),len(img_data[0][0]),len(img_data[0][0][0])-1))
 	t = time()
 	for (i,j,k) in mask :
 		X[i,j,k] = [1/b_val[l] * np.log(img_data[i,j,k,l]/s0[i,j,k]) for l in range(1,len(img_data[0][0][0]))]
 		if(time()-t>1) :
-			print(i,j,k)
 			t = time()
 	X = np.array(X)
-
-	print("X shape : ",X.shape)
 
 	b_x = b_vec[1:,0]
 	b_y = b_vec[1:,1]
@@ -56,30 +121,22 @@ def estimation_fa(D,mask) :
 	eigenvectors = np.zeros((len(D),len(D[0]),len(D[0][0]),3,3))
 	eigenvalues = np.zeros((len(D),len(D[0]),len(D[0][0]),3))
 
-	print("Estimation FA")
-	t = time()
 	for (i,j,k) in mask :
 		if(np.inf not in D[i,j,k] and -np.inf not in D[i,j,k] and np.isnan(D[i,j,k]).any() == False) :
 			eigenvectors[i,j,k],eigenvalues[i,j,k],vh = np.linalg.svd(D[i,j,k])
 			fa[i,j,k] = np.float32(fractional_anisotropy(eigenvalues[i,j,k]))
-		if(time()-t>1) :
-			print(i,j,k)
-			t = time()
 		#print('{:2.2%}'.format(i/len(D)))
 	return fa, eigenvectors, eigenvalues
 
-def tractographie(fa,eigenvectors,eigenvalues,img) :
+def tractographie(fa,eigenvectors,eigenvalues,img,output_filename) :
 	tracto = []
 
-	print("Create mask")
 	mask = []
 	for (i,j,k) in list(np.ndindex(fa.shape)) :
 		if(fa[i,j,k] > 0.1) :
 			mask.append([i,j,k])
 	mask = np.array(mask)
 
-	print("Create streamline")
-	t = time()
 	for n in range(100000) :
 		ite = 0
 		rand = random.randrange(len(mask))
@@ -118,14 +175,9 @@ def tractographie(fa,eigenvectors,eigenvalues,img) :
 
 		tracto.append(streamline)
 
-		if(time()-t>1) :
-			print('{:2.2%}'.format(n/100000))
-			t = time()
 	stf = StatefulTractogram(tracto,img,Space.RASMM)
-	print(stf)
-	print(stf.is_bbox_in_vox_valid())
 	stf.remove_invalid_streamlines()
-	save_tck(stf,"tractographie.tck")
+	save_tck(stf,output_filename)
 
 
 def unit_vector(vector):
@@ -135,3 +187,7 @@ def angle_between(v1, v2):
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
     return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+
+if __name__ == "__main__":
+    main()

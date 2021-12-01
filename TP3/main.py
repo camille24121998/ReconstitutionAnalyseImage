@@ -13,34 +13,27 @@ def main():
     ############
     # Partie 1 #
     ############
-    
+    """
     data = nib.load("Data/Tproject.nii")
     img = data.get_fdata()
     mat1,mat2,mat3 = projection.projection(img)
 
     plt.imshow(mat3,cmap="Greys")
     plt.show()
-    
+    """
     ############
     # Partie 2 #
     ############
-    """
+    
     data = nib.load("Data/dmri.nii")
     img = data.get_fdata()
 
-    txt = open("Data/gradient_directions_b-values.txt").read()
-    arr = np.array(txt.split())
-    arr = arr.reshape(-1,4)
-    arr = arr.astype(float)
-
-    b_vec = arr[:,:3]
-    b_val = arr[:,3]
-
+    b_vec, b_val = diffusion.get_b_vec_b_val("Data/gradient_directions_b-values.txt")
     D, mask = diffusion.estimation_tenseur(img,b_vec,b_val)
     D_mat = diffusion.tensor_2D_to_3D(D,mask)
     fa, eigenvectors, eigenvalues = diffusion.estimation_fa(D_mat,mask)
-    diffusion.tractographie(fa,eigenvectors,eigenvalues,data)
-    """
+    diffusion.tractographie(fa,eigenvectors,eigenvalues,data,"tractographie.tck")
+    
     ############
     # Partie 3 #
     ############
