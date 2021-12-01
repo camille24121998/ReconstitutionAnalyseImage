@@ -23,8 +23,10 @@ def main():
     b_vec = arr[:,:3]
     b_val = arr[:,3]
 
-    D = diffusion.estimation_tenseur(img,b_vec,b_val)
-    FA = diffusion.estimation_fa(D)
+    D, mask = diffusion.estimation_tenseur(img,b_vec,b_val)
+    D_mat = diffusion.tensor_2D_to_3D(D,mask)
+    fa, eigenvectors, eigenvalues = diffusion.estimation_fa(D_mat,mask)
+    diffusion.tractographie(fa,eigenvectors,eigenvalues,data)
 
     ############
     # Partie 3 #
