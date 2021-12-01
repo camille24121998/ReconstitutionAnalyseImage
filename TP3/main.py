@@ -1,7 +1,9 @@
 import numpy as np
 import nibabel as nib
+import matplotlib.pyplot as plt
 
 import diffusion
+import projection
 
 ############
 #   Main   #
@@ -9,9 +11,20 @@ import diffusion
 def main():
 
     ############
+    # Partie 1 #
+    ############
+    
+    data = nib.load("Data/Tproject.nii")
+    img = data.get_fdata()
+    mat1,mat2,mat3 = projection.projection(img)
+
+    plt.imshow(mat3,cmap="Greys")
+    plt.show()
+    
+    ############
     # Partie 2 #
     ############
-
+    """
     data = nib.load("Data/dmri.nii")
     img = data.get_fdata()
 
@@ -27,12 +40,13 @@ def main():
     D_mat = diffusion.tensor_2D_to_3D(D,mask)
     fa, eigenvectors, eigenvalues = diffusion.estimation_fa(D_mat,mask)
     diffusion.tractographie(fa,eigenvectors,eigenvalues,data)
-
+    """
     ############
     # Partie 3 #
     ############
 
-    '''dataDiff = nib.load("Data/dmri.nii")
+    """
+    dataDiff = nib.load("Data/dmri.nii")
     dataFonctionnelle = nib.load("Data/fmri.nii")
     dataT1 = nib.load("Data/t1.nii")
 
@@ -42,7 +56,8 @@ def main():
 
     print("Diffusion : ", np.shape(diff))
     print("Fonctionnelle : ", np.shape(fonct))
-    print("T1 : ", np.shape(t1))'''
+    print("T1 : ", np.shape(t1))
+    """
 
 if __name__ == "__main__":
     main()
